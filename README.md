@@ -1,13 +1,13 @@
 # DOE HPC Resources for the Genesis Mission: ALCF, OLCF, NERSC
 
-*Compiled 2026-10-20 for an MD + ML team. Every fact links to the page it came from.*
+*Compiled 2026-10-20 for an MD + ML team.*
 
 ## How to read this
 
-- **Sources.** OLCF, NERSC and AmSC pages were fetched and read on 2026-10-20.
-- **ALCF is the exception.** `alcf.anl.gov`, `docs.alcf.anl.gov` and `anl.gov` block automated reads, so ALCF facts were read from the docs site's own source repository, [argonne-lcf/user-guides](https://github.com/argonne-lcf/user-guides) (commit `0db16bd`, 2026-10-20). The links given are the published pages that source builds.
-- **"Not confirmed"** means no official page says it. Check with the facility before relying on it.
-- **GPU totals** marked *(computed)* are nodes × GPUs per node. The facility does not state the total itself.
+- We read the OLCF, NERSC and AmSC pages on 2026-10-20. Where a bullet has no link of its own, the link in its section heading is the source.
+- `alcf.anl.gov`, `docs.alcf.anl.gov` and `anl.gov` block automated reads, so we read ALCF's facts from the source repository its docs site is built from, [argonne-lcf/user-guides](https://github.com/argonne-lcf/user-guides) (commit `0db16bd`, 2026-10-20). The ALCF links point to the published pages built from that source.
+- "Not confirmed" means we found no official page that says it. Ask the facility before relying on it.
+- GPU totals marked *(computed)* are nodes × GPUs per node. The facility doesn't state the total.
 
 ---
 
@@ -15,7 +15,7 @@
 
 ### Production GPU systems available now
 
-Each cell links to the page it came from. "Not documented" cells have no page to link; they mean the facility's docs don't mention the package for that system.
+Each cell links to its source. A "Not documented" cell has no link because the facility's docs don't mention that package for that system.
 
 | System | Site | GPUs | Less than a node? | GROMACS | OpenMM | Containers | Compile & run your own code |
 |---|---|---|---|---|---|---|---|
@@ -26,9 +26,8 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 | **Lux** | OLCF | [504 nodes × 8 MI355X (288 GB) = 4,032](https://docs.olcf.ornl.gov/systems/lux_user_guide.html) | [**Yes**: 1-GPU unit](https://docs.olcf.ornl.gov/systems/lux_user_guide.html) | Not confirmed | Not confirmed | [Apptainer](https://github.com/olcf/olcf_container_examples/tree/HEAD/lux/pytorch/amdrocmregistry) / [Kubernetes](https://docs.olcf.ornl.gov/systems/lux_user_guide.html) | [Build](https://docs.olcf.ornl.gov/systems/lux_user_guide.html#compiling) · [Run](https://docs.olcf.ornl.gov/systems/lux_user_guide.html#running-jobs) |
 | **Perlmutter** | NERSC | [1,536 × 4 A100 40 GB + 256 × 4 A100 80 GB = 7,168](https://docs.nersc.gov/systems/perlmutter/architecture/) | [**Yes**: `shared` QOS (1 or 2 GPUs)](https://docs.nersc.gov/jobs/policy/) | [Container image](https://docs.nersc.gov/applications/gromacs/) ([module removed](https://docs.nersc.gov/systems/perlmutter/timeline/)) | Not documented | [Shifter](https://docs.nersc.gov/development/containers/shifter/how-to-use/), [podman-hpc](https://docs.nersc.gov/development/containers/podman-hpc/overview/) | [Clone & build walkthrough](https://docs.nersc.gov/tutorials/playbooks/compiling/) · [GPU builds](https://docs.nersc.gov/development/compilers/wrappers/) · [Run](https://docs.nersc.gov/systems/perlmutter/running-jobs/) |
 
-**About the "Compile & run your own code" column:**
-- **Clone first.** Only NERSC has a walkthrough that starts from downloading or `git clone`-ing the source. For the others, the Build link covers compilers and modules; clone the repository on a login node first.
-- **Sophia:** ALCF says not to compile on its login nodes, so build inside an interactive job.
+In the last column, only NERSC's walkthrough starts from downloading or `git clone`-ing the source. On the other systems, clone the repository on a login node, then follow the Build page for compilers and modules. On Sophia, ALCF says not to compile on the login nodes, so build inside an interactive job.
+
 ### Announced, not yet available to users
 
 | System | Site | Hardware | Expected |
@@ -38,15 +37,14 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 | Doudna | NERSC | [NVIDIA Vera Rubin](https://www.nersc.gov/what-we-do/resources/doudna-system) | [Delivery late 2026](https://www.nersc.gov/what-we-do/resources/doudna-system) |
 | Discovery | OLCF | [AMD MI430X + EPYC Venice](https://www.olcf.ornl.gov/olcf-resources/compute-systems/discovery/) | [2028](https://www.olcf.ornl.gov/olcf-resources/compute-systems/discovery/) |
 
-### Bottom line for MD + ML
+### Choosing a system for MD + ML
 
-- **Running many small single-GPU MD jobs:** Perlmutter `shared`, Lux and Sophia `by-gpu` charge only for the GPUs you use.
-- **On whole-node systems:** pack one task per GPU yourself. Each section below gives the documented recipe.
-- **Most MD software provided:** Polaris (NAMD binaries; GROMACS, AMBER and LAMMPS recipes) and Perlmutter (GROMACS, LAMMPS, NAMD and AMBER as NERSC container images).
-- **OpenMM:** no facility provides it as a module. Plan on conda-forge or pip on NVIDIA systems, or a container.
-- **AMD GPUs (Frontier, Lux):** build MD codes for ROCm/HIP.
-- **Intel GPUs (Aurora):** build MD codes for SYCL/oneAPI.
-- **NVIDIA containers:** CUDA/NGC images do not run on Frontier, Lux or Aurora.
+- For many small single-GPU MD jobs, use Perlmutter's `shared` QOS, Lux, or Sophia's `by-gpu` queue. All three charge only for the GPUs you use.
+- On the whole-node systems, pack one task per GPU yourself. Each system's section below gives the facility's recipe.
+- Polaris and Perlmutter provide the most MD software. Polaris has NAMD binaries and build recipes for GROMACS, AMBER and LAMMPS. Perlmutter has GROMACS, LAMMPS, NAMD and AMBER as NERSC container images.
+- None of the three facilities documents an OpenMM module. Install it from conda-forge or pip on the NVIDIA systems, or use a container.
+- On the AMD systems (Frontier, Lux), build MD codes for ROCm/HIP. On Aurora's Intel GPUs, build them with SYCL/oneAPI.
+- CUDA/NGC images can't use the GPUs on Frontier, Lux or Aurora.
 
 ---
 
@@ -54,7 +52,7 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 
 ### American Science Cloud (AmSC)
 
-- **What it is:** DOE's federated science cloud and "the cornerstone" of the Genesis Mission platform. It is run by ORNL ([amsc.energy.gov](https://amsc.energy.gov/)).
+- **What it is:** DOE's federated science cloud, which DOE calls "the cornerstone" of the Genesis Mission platform. ORNL runs it ([amsc.energy.gov](https://amsc.energy.gov/)).
 - **Support:**
   - Contact form: <https://amsc.energy.gov/#support>
   - Support docs page: <https://docs.amsc.energy.gov/support/>
@@ -75,7 +73,7 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 
 **Models** ([model list](https://docs.amsc.energy.gov/model-selection), [providers](https://docs.amsc.energy.gov/model-names)):
 - Claude, GPT, Gemini and embedding models.
-- All are served through commercial clouds (OpenAI, Bedrock, Vertex, Azure). None runs on DOE lab hardware.
+- The docs list only commercial providers (OpenAI, Bedrock, Vertex, Azure). None of the listed models runs on DOE lab hardware.
 
 **Rate limits:** 20 parallel requests and 120 requests per minute per user ([docs](https://docs.amsc.energy.gov/mag-rate-limits)).
 
@@ -90,10 +88,10 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 
 ### How Genesis teams get HPC time
 
-- **Compute is allocated separately from the award.** The RFA says "Computing and data storage resources will not be allocated at the time of funding awards". DOE program managers allocate compute through a separate process after awards ([ASCR webinar slides](https://science.osti.gov/-/media/grants/pdf/foas-resources/2026/Genesis-Mission-RFA-Informational-Webinar-v2-public--clean--ASCR.pdf); [AmSC town-hall Q&A](https://amsc.energy.gov/wp-content/uploads/ORNL-Town-Hall-QA-04062026.pdf)).
-- **No facility publishes a Genesis-specific allocation call.** Ask your DOE program manager, or write to GenesisMissionNOFO@science.doe.gov.
-- **The one dedicated Genesis share is on OLCF Lux.** Half of its 3.5M node-hours per year are set aside for Genesis ([OLCF Lux](https://www.olcf.ornl.gov/olcf-resources/compute-systems/lux/)). How to apply for that share is not confirmed; the page says to email support.
-- **The standard routes still apply:**
+- DOE program managers allocate compute in a separate step after awards are made. The RFA says "Computing and data storage resources will not be allocated at the time of funding awards" ([ASCR webinar slides](https://science.osti.gov/-/media/grants/pdf/foas-resources/2026/Genesis-Mission-RFA-Informational-Webinar-v2-public--clean--ASCR.pdf); [AmSC town-hall Q&A](https://amsc.energy.gov/wp-content/uploads/ORNL-Town-Hall-QA-04062026.pdf)).
+- We found no Genesis-specific allocation call at any of the three facilities. Ask your DOE program manager, or write to GenesisMissionNOFO@science.doe.gov.
+- The only dedicated Genesis share we found is on OLCF Lux. OLCF sets aside half of Lux's 3.5M node-hours per year for Genesis ([OLCF Lux](https://www.olcf.ornl.gov/olcf-resources/compute-systems/lux/)). The page doesn't say how to apply for that share, only to email support.
+- You can also apply through the standard programs:
 
 | Program | Covers | Status |
 |---|---|---|
@@ -101,7 +99,7 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 | [ALCC](https://science.osti.gov/ascr/Facilities/Accessing-ASCR-Facilities/ALCC/Call-for-Proposals) | Frontier, Aurora, Polaris, Perlmutter | |
 | ALCF Director's Discretionary | ALCF systems | Rolling ([link](https://www.alcf.anl.gov/science/directors-discretionary-allocation-program)) |
 | OLCF Director's Discretion | OLCF systems | Rolling ([link](https://my.olcf.ornl.gov/project-application-new)) |
-| NERSC ERCAP | Perlmutter | AY2027 closed 2026-10-05, but proposals are accepted year-round while time remains ([call](https://www.nersc.gov/users/user-news/call-for-proposals-for-nersc-ay-2027)) |
+| NERSC ERCAP | Perlmutter | AY2027 closed 2026-10-05; NERSC accepts proposals year-round while time remains ([call](https://www.nersc.gov/users/user-news/call-for-proposals-for-nersc-ay-2027)) |
 
 ---
 
@@ -119,7 +117,7 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 - **CPU:** 2× Xeon Max 9470C per node (52 cores each).
 - **GPU:** 6× Intel Data Center GPU Max 1550 (Ponte Vecchio) per node, 128 GB HBM2e each. Each GPU has 2 tiles, so a node has 12 tiles.
 - **Total:** 63,744 GPUs.
-- **Recent update:** a major software update on 2026-09-28 (oneAPI 2026.1, SLES 15 SP7) **requires recompiling** ([system updates](https://docs.alcf.anl.gov/aurora/system-updates/)).
+- **Recent update:** ALCF updated the software stack on 2026-09-28 (oneAPI 2026.1, SLES 15 SP7). Code built before then must be recompiled ([system updates](https://docs.alcf.anl.gov/aurora/system-updates/)).
 
 **Scheduling** ([running jobs](https://docs.alcf.anl.gov/aurora/running-jobs-aurora/))
 
@@ -130,7 +128,7 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 | prod | 256+ | 12–24 h by size |
 | capacity | 1–16 | 168 h |
 
-- **Less than a node: no.** ALCF allocates whole nodes ([PBS overview](https://docs.alcf.anl.gov/running-jobs/)).
+- **Less than a node:** no. ALCF allocates whole nodes ([PBS overview](https://docs.alcf.anl.gov/running-jobs/)).
 - **Packing tasks onto a node** (same running-jobs page):
   - Launch several `mpiexec ... &` commands, each with its own `ZE_AFFINITY_MASK=<gpu>.<tile>` and `--cpu-bind=list:`, then `wait`. That gives up to 12 single-tile tasks per node.
   - Or use the wrapper scripts `gpu_tile_compact.sh` / `gpu_dev_compact.sh`, or `--gpu-bind=list:0.0:0.1:...`.
@@ -157,7 +155,7 @@ Each cell links to the page it came from. "Not documented" cells have no page to
   module load apptainer
   apptainer build --fakeroot myimage.sif docker://<image>
   ```
-- **Images must carry the Intel GPU stack.** ALCF's example builds from `intel/oneapi-hpckit`. **CUDA/NGC images will not use Aurora's GPUs.**
+- **GPU stack:** build images on Intel's GPU stack; ALCF's example starts from `intel/oneapi-hpckit`. CUDA/NGC images can't use Aurora's GPUs.
 
 **Custom software without containers**
 - **Python:** `python3 -m venv --system-site-packages` on top of `frameworks`, or conda ([Python](https://docs.alcf.anl.gov/aurora/data-science/python/)). At more than about 1000 nodes, use Copper for imports (same page).
@@ -183,7 +181,7 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 | preemptable | 1–10 | 72 h |
 | capacity | 1–4 | 168 h |
 
-- **Less than a node: no.** "Jobs on Polaris cannot share nodes with other jobs" ([example scripts](https://docs.alcf.anl.gov/running-jobs/example-job-scripts/)).
+- **Less than a node:** no. "Jobs on Polaris cannot share nodes with other jobs" ([example scripts](https://docs.alcf.anl.gov/running-jobs/example-job-scripts/)).
 - **Packing tasks onto a node** ([using GPUs](https://docs.alcf.anl.gov/polaris/running-jobs/using-gpus/)):
   - Run 4 backgrounded launches, each pinned to one GPU with `CUDA_VISIBLE_DEVICES` and NUMA-matched to its CPU cores:
     ```bash
@@ -193,14 +191,14 @@ Each cell links to the page it came from. "Not documented" cells have no page to
     export CUDA_VISIBLE_DEVICES=3; mpiexec -n 8 --ppn 8 --cpu-bind list:0:1:2:3:4:5:6:7 ./app &
     wait
     ```
-  - **NVIDIA MPS is supported** through `enable_mps_polaris.sh`. It suits many small MD systems sharing a GPU.
-  - **MIG is disabled.**
+  - ALCF supports NVIDIA MPS through `enable_mps_polaris.sh`. We think it is the best way to run several small MD systems on one GPU; ALCF doesn't say so.
+  - MIG is disabled.
 
 **Preinstalled software**
 
 | Package | Status | Source |
 |---|---|---|
-| PyTorch, TensorFlow, JAX | `module use /soft/modulefiles; module load conda; conda activate base`. `conda/2026-10-01` (PyTorch 2.14, TF 2.21, JAX 0.11.1, CUDA 13) becomes the default in a few weeks; venvs must then be rebuilt. | [Python](https://docs.alcf.anl.gov/polaris/data-science/python/), [updates](https://docs.alcf.anl.gov/polaris/system-updates/) |
+| PyTorch, TensorFlow, JAX | `module use /soft/modulefiles; module load conda; conda activate base`. `conda/2026-10-01` (PyTorch 2.14, TF 2.21, JAX 0.11.1, CUDA 13) becomes the default in a few weeks, and venvs built on the old module will then need rebuilding. | [Python](https://docs.alcf.anl.gov/polaris/data-science/python/), [updates](https://docs.alcf.anl.gov/polaris/system-updates/) |
 | GROMACS | Prebuilt 2022.1 at `/soft/applications/Gromacs/gromacs-2022.1`, plus a build recipe. **Likely stale** (built for CUDA 11, before the CUDA 13 upgrade). | [GROMACS](https://docs.alcf.anl.gov/polaris/applications-and-libraries/applications/gromacs/) |
 | NAMD | Prebuilt `namd3` in `/soft/applications/namd`; recommended | [NAMD](https://docs.alcf.anl.gov/polaris/applications-and-libraries/applications/namd/) |
 | AMBER | Build recipe (Amber24); no binary | [AMBER](https://docs.alcf.anl.gov/polaris/applications-and-libraries/applications/amber/) |
@@ -235,7 +233,7 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 - **Total:** 192 GPUs.
 
 **Scheduling** ([running jobs](https://docs.alcf.anl.gov/sophia/queueing-and-running-jobs/running-jobs/))
-- **Less than a node: yes. It is the only ALCF GPU system that allows it.**
+- **Less than a node:** yes. Sophia is the only ALCF GPU system that allows it.
   - The `by-gpu` queue (the default) takes `-l select=N` with N = 1, 2, 4 or 8 GPUs, up to 24 h.
   - `by-node` covers 1–8 nodes, 24 h.
 - **Limits:** 5 running and 20 queued jobs per project.
@@ -250,8 +248,8 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 ### 2.4 Other ALCF resources
 
 - **Crux:** 256 CPU-only nodes ([Crux](https://docs.alcf.anl.gov/crux/)).
-- **AI Testbed:** Cerebras CS-3, Graphcore, Groq, and SambaNova SN40L (inference only, through the ALCF Inference Service) ([AI Testbed](https://docs.alcf.anl.gov/ai-testbed/)). It is not an MD platform.
-- **Equinox and Solstice:** in no user docs yet. Status is unconfirmed; ALCF's [Genesis page](https://www.alcf.anl.gov/genesis-mission) blocks automated reads, so check it in a browser.
+- **AI Testbed:** Cerebras CS-3, Graphcore, Groq, and SambaNova SN40L (inference only, through the ALCF Inference Service) ([AI Testbed](https://docs.alcf.anl.gov/ai-testbed/)). ALCF documents no MD software on any of them.
+- **Equinox and Solstice:** not in the user docs yet, and we couldn't confirm their status. ALCF's [Genesis page](https://www.alcf.anl.gov/genesis-mission) blocks automated reads, so check it in a browser.
 
 ---
 
@@ -269,16 +267,16 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 **Scale** ([Frontier user guide](https://docs.olcf.ornl.gov/systems/frontier_user_guide.html), "FUG" below)
 - **Nodes:** 9,856.
 - **CPU:** 1× 64-core EPYC per node, 512 GB. 56 cores are usable.
-- **GPU:** 4× MI250X per node. Each MI250X has 2 GCDs, so a node has **8 GCDs, each 64 GB, each treated as one GPU by Slurm**.
+- **GPU:** 4× MI250X per node. Each MI250X has 2 GCDs, so a node has 8 GCDs of 64 GB each. Slurm treats each GCD as one GPU.
 - **Total:** about 78,848 GCDs *(computed)*.
 
 **Scheduling** (FUG, "Scheduling Policy")
-- **Less than a node: no.** The charge is nodes × elapsed time. One node (8 GCDs) is the minimum.
+- **Less than a node:** no. The charge is nodes × elapsed time. One node (8 GCDs) is the minimum.
 - **Walltime depends on job size** in the `batch` partition:
 
 | Nodes | Max walltime |
 |---|---|
-| 1–91 | **2 h** |
+| 1–91 | 2 h |
 | 92–183 | 6 h |
 | 184+ | 12 h |
 
@@ -301,9 +299,9 @@ Each cell links to the page it came from. "Not documented" cells have no page to
 
 | Package | Status | Source |
 |---|---|---|
-| LAMMPS | **Module**, e.g. `lammps/20250722.3-gpu-mpi-omp` (after loading cpe/26.03, PrgEnv-gnu, rocm/7.0.2, cray-mpich) | catalog |
-| PLUMED | **Module** (`plumed/2.10.0-mpi`) | catalog |
-| GROMACS, OpenMM, AMBER, NAMD | **No module.** Build them yourself or use a container. | catalog |
+| LAMMPS | Module, e.g. `lammps/20250722.3-gpu-mpi-omp` (after loading cpe/26.03, PrgEnv-gnu, rocm/7.0.2, cray-mpich) | catalog |
+| PLUMED | Module (`plumed/2.10.0-mpi`) | catalog |
+| GROMACS, OpenMM, AMBER, NAMD | No module. Build them yourself or use a container. | catalog |
 | PyTorch | Self-install: ROCm wheels in a conda env (torch 2.10 / ROCm 7.1) | [PyTorch on Frontier](https://docs.olcf.ornl.gov/software/analytics/pytorch_frontier.html) |
 | JAX | Self-install: `jax-rocm7-plugin` 0.7.1 | [JAX](https://docs.olcf.ornl.gov/software/analytics/jax.html) |
 | TensorFlow | AMD's `rocm/tensorflow` container only | [containers](https://docs.olcf.ornl.gov/software/containers_on_frontier.html) |
@@ -338,28 +336,28 @@ For OpenMM, build it from source against ROCm/HIP. OLCF documents no route.
 **Custom software without containers**
 - **Compilers:** the Cray PE (CCE, AMD and GCC) plus ROCm modules. The recommended pairings are cpe/25.09 + rocm/6.4.2 and cpe/26.03 + rocm/7.x (FUG). With a non-default CPE, `export LD_LIBRARY_PATH=$CRAY_LD_LIBRARY_PATH:$LD_LIBRARY_PATH`.
 - **User-Managed Software:** `module load ums`, then project modules such as E4S (`ums002`) ([UMS](https://docs.olcf.ornl.gov/software/UMS/index.html)).
-- **Spack:** the [Spack environments page](https://docs.olcf.ornl.gov/software/spack_environments.html) is **outdated** (it targets Summit and its template repo is archived). Use OLCF modules as Spack externals.
+- **Spack:** the [Spack environments page](https://docs.olcf.ornl.gov/software/spack_environments.html) is out of date: it targets Summit, and its template repo is archived. Use OLCF modules as Spack externals.
 
 ### 3.2 Lux (AMD MI355X AI cluster)
 
 **Scale** ([Lux user guide](https://docs.olcf.ornl.gov/systems/lux_user_guide.html))
 - **Nodes:** 504 HPE XD685.
 - **CPU:** 2× 64-core EPYC 9575F per node, 3 TB RAM.
-- **GPU:** 8× AMD MI355X per node, **288 GB HBM3E each**.
+- **GPU:** 8× AMD MI355X per node, 288 GB HBM3E each.
 - **Total:** 4,032 GPUs.
 - **Access modes:** a Slurm side and a Kubernetes side.
-- **Status:** the user guide documents Lux as in production. The [facility page](https://www.olcf.ornl.gov/olcf-resources/compute-systems/lux/) still says "will be deployed within six months", which is stale.
+- **Status:** the user guide documents Lux as in production. The [facility page](https://www.olcf.ornl.gov/olcf-resources/compute-systems/lux/) still says it "will be deployed within the next six months"; that page is out of date.
 
 **Scheduling** (user guide)
-- **Less than a node: yes.**
+- **Less than a node:** yes.
   - The unit is 1 GPU, which comes with 16 cores and 375 GB RAM.
   - `--exclusive` gives a whole node.
 - **Charging:** 0.125 node-hours per GPU-hour.
 - **Walltime:** up to 48 h, on 1–484 nodes.
 - **Packing:** same `srun --gpus-per-task=1 --gpu-bind=closest ... &` pattern as Frontier.
-- **MPI and RCCL:** MPI is "not yet officially verified", so keep MPI jobs to 16 nodes or fewer. RCCL is the main path.
+- **MPI and RCCL:** our first read of the guide found MPI described as "not yet officially verified", with a 16-node limit for MPI jobs and RCCL over the AMD Pollara NICs as the main communication path. We couldn't find those sentences again on a second read, so check the guide before relying on them.
 - **Kubernetes:** pods of up to 8 GPUs and 48 h, in the `<proj>-gpu` namespace.
-- **Genesis share:** **half of Lux's 3.5M node-hours per year are reserved for the Genesis Mission** ([facility page](https://www.olcf.ornl.gov/olcf-resources/compute-systems/lux/)).
+- **Genesis share:** half of Lux's 3.5M node-hours per year ([facility page](https://www.olcf.ornl.gov/olcf-resources/compute-systems/lux/)).
 
 **Software**
 - **Modules:** `rocm/7.2.4` and `rocm/7.14.0`, `openmpi`, `mpich`, `amdfftw`.
@@ -388,23 +386,23 @@ For OpenMM, build it from source against ROCm/HIP. OLCF documents no route.
 
 - **Total:** 7,168 GPUs *(computed)*.
 - **Selecting the 80 GB nodes:** `-C "gpu&hbm80g"`.
-- **Requesting GPUs:** you must request them explicitly (`--gpus*`) ([running jobs](https://docs.nersc.gov/systems/perlmutter/running-jobs/)).
+- **Requesting GPUs:** request them explicitly with one of the `--gpus*` options ([running jobs](https://docs.nersc.gov/systems/perlmutter/running-jobs/)).
 
 **Scheduling** ([queue policy](https://docs.nersc.gov/jobs/policy/))
 
 | QOS | Max nodes | Max walltime | Notes |
 |---|---|---|---|
 | regular | — | 48 h | Exclusive nodes |
-| **shared** | 0.5 node | 48 h | **1 or 2 GPUs**, charged by fraction of the node |
+| shared | 0.5 node | 48 h | 1 or 2 GPUs, charged by fraction of the node |
 | debug | 8 | 30 min | |
 | interactive | 4 | 4 h | `salloc` only |
 | preempt | 128 | 48 h | Charge drops to 0.25 after 2 h; can be preempted |
 | premium | — | 48 h | 2× charge |
 
-- **Less than a node: yes.**
+- **Less than a node:** yes.
   - "GPU jobs in the shared QOS may request 1 or 2 GPUs and will be allocated a corresponding 16 CPU cores and 64 GB RAM or 32 CPU cores and 128 GB RAM."
   - Example charge: 10 h on 2 GPUs = 5 node-hours.
-  - Jobs using 3–4 GPUs take a full node.
+  - A job that needs 3 or 4 GPUs has to request a full node.
 - **Packing single-GPU tasks into one node** ([running jobs](https://docs.nersc.gov/systems/perlmutter/running-jobs/), "Single-GPU tasks in parallel"):
   ```bash
   #SBATCH -C gpu
@@ -415,22 +413,23 @@ For OpenMM, build it from source against ROCm/HIP. OLCF documents no route.
   done
   wait
   ```
-  - **CUDA MPS** is documented on the same page for running more than one process per GPU.
+  - The same page shows how to use CUDA MPS to run more than one process per GPU.
   - For hundreds of tasks, use [GNU Parallel](https://docs.nersc.gov/jobs/workflow/gnuparallel/) rather than many `srun` calls or job arrays.
 
 **Preinstalled software**
-NERSC provides its supported MD codes as **Shifter container images, not modules**. The GROMACS modules were removed in January 2025 ([timeline](https://docs.nersc.gov/systems/perlmutter/timeline/)).
+
+NERSC provides its supported MD codes as Shifter container images. It removed the GROMACS modules in January 2025 ([timeline](https://docs.nersc.gov/systems/perlmutter/timeline/)).
 
 | Package | How provided | Source |
 |---|---|---|
-| GROMACS | `docker:nersc/gromacs:23.2` (also `_plumed`, `_colvars` variants). **PME is not GPU-accelerated** in these images. | [GROMACS](https://docs.nersc.gov/applications/gromacs/) |
+| GROMACS | `docker:nersc/gromacs:23.2` (also `_plumed`, `_colvars` variants). PME runs on the CPU in these images. | [GROMACS](https://docs.nersc.gov/applications/gromacs/) |
 | LAMMPS | `nersc/lammps_all:23.08` and related images, plus a Kokkos build recipe | [LAMMPS](https://docs.nersc.gov/applications/lammps/) |
 | NAMD | `nvcr.io/hpc/namd:3.0-beta5` (GPU, single-node) | [NAMD](https://docs.nersc.gov/applications/namd/) |
 | AMBER | `docker:nersc/amber_gpu:22` | [AMBER](https://docs.nersc.gov/applications/amber/) |
-| OpenMM | **Not documented.** Self-install with conda/pip or a container. | — |
+| OpenMM | Not documented. Install it yourself with conda or pip, or use a container. | — |
 | PyTorch | `module load pytorch/<ver>` (2.13.0 newest); NGC-based `nersc/pytorch` images | [PyTorch](https://docs.nersc.gov/machinelearning/pytorch/) |
 | TensorFlow | `module load tensorflow/<ver>` | [TensorFlow](https://docs.nersc.gov/machinelearning/tensorflow/) |
-| JAX | **Not documented.** Self-install. | — |
+| JAX | Not documented. Install it yourself. | — |
 | Python | `module load python` or `module load conda` (Miniforge) | [NERSC Python](https://docs.nersc.gov/development/languages/python/nersc-python/) |
 
 **GROMACS run example** (from the GROMACS page):
@@ -440,10 +439,11 @@ srun --cpu-bind=cores --gpu-bind=none --module cuda-mpich shifter gmx_mpi mdrun 
 ```
 
 **Containers** ([overview](https://docs.nersc.gov/development/containers/))
-- **Two runtimes.** NERSC recommends **podman-hpc** for new users. **Shifter** remains in production use.
+NERSC runs two container runtimes. It recommends podman-hpc for new users, and still runs its own MD images under Shifter.
+
 - **podman-hpc** ([docs](https://docs.nersc.gov/development/containers/podman-hpc/overview/)):
   - Pull with `podman-hpc pull <image>`.
-  - You can **build a Dockerfile on Perlmutter** with `podman-hpc build -t name:tag .`, then `podman-hpc migrate name:tag` so jobs can use the image.
+  - You can build a Dockerfile on Perlmutter itself with `podman-hpc build -t name:tag .`, then `podman-hpc migrate name:tag` so jobs can use the image.
   - Run with flags: `srun podman-hpc run --rm --gpu [--mpi|--cuda-mpi|--nccl-cu12] <image> <cmd>`.
   - Apptainer/Singularity image formats are supported.
 - **Shifter** ([docs](https://docs.nersc.gov/development/containers/shifter/how-to-use/)):
@@ -452,11 +452,11 @@ srun --cpu-bind=cores --gpu-bind=none --module cuda-mpich shifter gmx_mpi mdrun 
   - Modules: `--module=gpu`, `cuda-mpich` (CUDA-aware MPI), and `nccl-plugin` (NCCL over Slingshot).
 - **registry.nersc.gov** ([registry](https://docs.nersc.gov/development/containers/registry/)):
   - A private project registry. Request access by ticket.
-  - It also acts as a **pull-through cache** for docker.io, ghcr.io, nvcr.io (NGC), quay.io and others.
-  - **NGC images work natively on Perlmutter.**
+  - It also caches pulls from docker.io, ghcr.io, nvcr.io (NGC), quay.io and others.
+  - NGC images can use Perlmutter's GPUs.
 
 **Custom software without containers**
-- **conda / venv:** install with `conda create --prefix /global/common/software/<proj>/myenv`, which is fast to import at scale but read-only from compute nodes, so install from login nodes ([NERSC Python](https://docs.nersc.gov/development/languages/python/nersc-python/), [global common](https://docs.nersc.gov/filesystems/global-common/)).
+- **conda / venv:** install with `conda create --prefix /global/common/software/<proj>/myenv`. NERSC recommends that location because imports from it are fast at scale. Compute nodes mount it read-only, so install from a login node ([NERSC Python](https://docs.nersc.gov/development/languages/python/nersc-python/), [global common](https://docs.nersc.gov/filesystems/global-common/)).
 - **Spack:** `module load spack` comes preconfigured for the NERSC PE ([Spack](https://docs.nersc.gov/development/build-tools/spack/)).
 - **E4S:** provided as Shifter images only ([E4S](https://docs.nersc.gov/applications/e4s/)).
 - **Cray PE:** `cc`/`CC`/`ftn` with `cudatoolkit` and `craype-accel-nvidia80` ([compiler wrappers](https://docs.nersc.gov/development/compilers/wrappers/)).
@@ -467,17 +467,16 @@ srun --cpu-bind=cores --gpu-bind=none --module cuda-mpich shifter gmx_mpi mdrun 
 - **Delivery:** "scheduled to be delivered in late 2026" ([Doudna](https://www.nersc.gov/what-we-do/resources/doudna-system)).
 - **Announced hardware:**
   - Dell systems on the NVIDIA Vera Rubin platform, with Quantum-X800 InfiniBand.
-  - At least 10× Perlmutter's performance.
-  - Containers are central to its user environment.
-  - Node and GPU counts are not published.
-- **No user docs yet.** The **AY2027 allocation call offers Perlmutter only** ([call](https://www.nersc.gov/users/user-news/call-for-proposals-for-nersc-ay-2027)).
+  - NERSC says at least 10× Perlmutter's performance, and says containers will be central to its user environment.
+  - NERSC hasn't published node or GPU counts.
+- **User docs:** none yet. The AY2027 allocation call offers Perlmutter only ([call](https://www.nersc.gov/users/user-news/call-for-proposals-for-nersc-ay-2027)).
 - **Early-access system:** Cech (72 Grace CPUs + 144 Blackwell GPUs) is staff-only for now and "will be used to support the Genesis Mission" ([NERSC news](https://www.nersc.gov/news-and-events/news/berkeley-lab-takes-major-step-toward-doudna-with-delivery-of-early-access-system-cech)).
 
 ---
 
 ## 5. Known documentation problems
 
-These are places where the facilities' own documentation is stale or contradicts itself. Check them before relying on them.
+The facility pages below are out of date or contradict each other. Check them with the facility before relying on them.
 
 - **ALCF Polaris GROMACS:** the prebuilt binary and recipe target CUDA 11 and predate the CUDA 13 upgrade.
 - **ALCF Polaris OpenMM:** the page is stale and references a 2022 conda module.
@@ -488,7 +487,7 @@ These are places where the facilities' own documentation is stale or contradicts
 - **OLCF Summit:** it still appears on the compute-systems index, though it is retired.
 - **NERSC systems index:** <https://docs.nersc.gov/systems/> gives 1,536 GPU nodes, leaving out the 256 nodes with 80 GB GPUs.
 - **NERSC MD images:** they are from 2023–24 (GROMACS 23.2, LAMMPS 23.08, NAMD 3.0b5).
-- **Equinox:** DOE said "2026". An Argonne page reportedly now says "planning stages". Neither could be verified from an official page.
+- **Equinox:** DOE's October 2025 announcement said "expected to be delivered in 2026". A [GitHub issue on argonne-lcf/user-guides](https://github.com/argonne-lcf/user-guides/issues/1329) quotes anl.gov as now saying "in the planning stages". We couldn't open the anl.gov page to check.
 
 ## 6. Questions to send the facilities
 
